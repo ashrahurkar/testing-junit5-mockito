@@ -55,7 +55,7 @@ class VisitSDJpaServiceTest {
         // when
         visitSDJpaService.findById(1L);
         // then
-        then(visitRepository).should().findById(anyLong());
+        then(visitRepository).should(timeout(100)).findById(anyLong());
     }
 
     // behaviour driven testing
@@ -101,6 +101,6 @@ class VisitSDJpaServiceTest {
         visitSDJpaService.deleteById(1L);
         visitSDJpaService.deleteById(1L);
         // then
-        then(visitRepository).should(times(2)).deleteById(anyLong());
+        then(visitRepository).should(timeout(100).times(2)).deleteById(anyLong());
     }
 }
