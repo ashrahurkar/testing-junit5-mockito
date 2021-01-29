@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OwnerControllerTest {
@@ -75,28 +75,6 @@ class OwnerControllerTest {
     }*/
 
     @Test
-    void processFindFormWildCardStringAnnotation() {
-        // given
-        Owner owner = new Owner(1L,"Ashish","R");
-        // when
-        String viewName = ownerController.processFindForm(owner,bindingResult,model);
-        // then
-        assertThat("%R%").isEqualToIgnoringCase(argumentCaptor.getValue());
-        assertThat("redirect:/owners/1").isEqualToIgnoringCase(viewName);
-    }
-
-    @Test
-    void processFindFormWildCardNotFound() {
-        // given
-        Owner owner = new Owner(1L,"Ashish","Mika");
-        // when
-        String viewName = ownerController.processFindForm(owner,bindingResult,model);
-        // then
-        assertThat("%Mika%").isEqualToIgnoringCase(argumentCaptor.getValue());
-        assertThat("owners/findOwners").isEqualToIgnoringCase(viewName);
-    }
-
-    @Test
     void processFindFormWildCardFindMe() {
         // given
         Owner owner = new Owner(1L,"Ashish","Dukati");
@@ -109,7 +87,31 @@ class OwnerControllerTest {
 
         // inorder asserts
         inOrder.verify(ownerService).findAllByLastNameLike(anyString());
-        inOrder.verify(model).addAttribute(anyString(),anyList());
+        inOrder.verify(model, times(1)).addAttribute(anyString(),anyList());
+        verifyNoMoreInteractions(model);
+    }
+
+    @Test
+    void processFindFormWildCardStringAnnotation() {
+        // given
+        Owner owner = new Owner(1L,"Ashish","R");
+        // when
+        String viewName = ownerController.processFindForm(owner,bindingResult,model);
+        // then
+        assertThat("%R%").isEqualToIgnoringCase(argumentCaptor.getValue());
+        assertThat("redirect:/owners/1").isEqualToIgnoringCase(viewName);
+        verifyNoInteractions(model);
+    }
+
+    @Test
+    void processFindFormWildCardNotFound() {
+        // given
+        Owner owner = new Owner(1L,"Ashish","Mika");
+        // when
+        String viewName = ownerController.processFindForm(owner,bindingResult,model);
+        // then
+        assertThat("%Mika%").isEqualToIgnoringCase(argumentCaptor.getValue());
+        assertThat("owners/findOwners").isEqualToIgnoringCase(viewName);
     }
 
     @Test
